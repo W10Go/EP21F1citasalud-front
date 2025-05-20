@@ -1,14 +1,25 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [data, setData] = useState<User[]>([]);
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
+  };
+  type User = {
+    id: number;
+    nombre: string;
+    apellido: string;
+    email: string;
+    password: string;
+    documento: string;
+    celular: string;
   };
 
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,8 +28,41 @@ export default function Login() {
 
   const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(event.target.value);
-    console.log(username);
   };
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    const userFound = data.find((user) => user.email === username);
+    if (!userFound) {
+      alert(
+        "usuario o contraseña incorrectas, por favor verifica tus datos e intenta nuevamente"
+      );
+    } else {
+      // Aquí puedes agregar lógica adicional para validar la contraseña si lo deseas
+      if (userFound.password === password) {
+        alert("Inicio de sesión exitoso");
+        // Redirigir a la página de inicio o realizar otra acción
+        alert("Bienvenido " + userFound.nombre);
+        // Aquí puedes redirigir al usuario a la página de inicio
+        window.location.href = "/";
+      } else {
+        alert(
+          "usuario o contraseña incorrectas, por favor verifica tus datos e intenta nuevamente"
+        );
+      }
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetch("http://localhost:8080/api/usuarios");
+      const newData = await res.json();
+      setData(newData);
+      console.log(newData);
+    };
+    fetchData();
+  }, []);
+
   return (
     <main className="flex gap-4 items-center h-screen">
       <section className="w-[60%] bg-gray-30 items-center justify-center hidden md:block ">
@@ -39,11 +83,11 @@ export default function Login() {
         />
 
         <div className="w-[80%]">
-          <form className="flex flex-col gap-4">
+          <form className="flex flex-col gap-4" onSubmit={handleLogin}>
             <input
               type="text"
               placeholder="Correo Electronico"
-              className="w-full px-4 py-2 mb-2 border bg-gray-50 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 mb-2 border-b-2 bg-gray-50 focus:outline-none"
               onChange={handleUsernameChange}
               value={username}
             />
@@ -51,7 +95,7 @@ export default function Login() {
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Contraseña"
-                className="w-full px-4 py-2 mb-2 border bg-gray-50 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+                className="w-full px-4 py-2 mb-2 border-b-2 bg-gray-50 focus:outline-none"
                 onChange={handlePasswordChange}
                 value={password}
               />
@@ -60,7 +104,7 @@ export default function Login() {
                 onClick={togglePasswordVisibility}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
               >
-                {showPassword ? "Ocultar" : "Mostrar"}
+                {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
               </button>
             </div>
 
@@ -71,7 +115,7 @@ export default function Login() {
               <a href="#" className=" hover:text-blue-500 mr-auto">
                 ¿Tienes problemas para iniciar sesión?
               </a>
-              <a href="#" className="hover:text-blue-500">
+              <a href="/signup" className="hover:text-blue-500">
                 Crear cuenta
               </a>
             </section>
