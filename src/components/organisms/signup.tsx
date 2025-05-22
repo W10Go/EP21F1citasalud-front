@@ -1,7 +1,8 @@
 "use client";
 import Image from "next/image";
 import { useState } from "react";
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import ShowPasswordButton from "../atoms/ShowPasswordButton";
+import InputRegister from "../atoms/InputRegister";
 
 /*
 type User = {
@@ -81,54 +82,30 @@ export default function SignUp() {
             className="flex flex-col md:flex-row md:flex-wrap items-center justify-between gap-10 w-full"
             onSubmit={handleRegister}
           >
-            <div className="w-full  lg:w-2/5">
-              <label className="text-[18px] font-bold">Nombre/s</label>
-              <label className="text-red-700"> *</label>
-              <br />
-              <input
-                type="text"
-                onChange={(e) => setName(e.target.value)}
-                value={name}
-                className="w-full px-4 py-2 mb-2 border-b-2 bg-gray-50 focus:outline-none"
-              />
-            </div>
-            <div className="w-full  lg:w-2/5">
-              <label className="text-[18px] font-bold">Apellido/s </label>
-              <label className="text-red-700"> *</label>
-              <br />
-              <input
-                type="text"
-                onChange={(e) => setLastName(e.target.value)}
-                value={lastName}
-                className="w-full px-4 py-2 mb-2 border-b-2 bg-gray-50 focus:outline-none"
-              />
-            </div>
-            <div className="w-full  lg:w-2/5">
-              <label className="text-[18px] font-bold">
-                Documento de identidad{" "}
-              </label>
-              <label className="text-red-700"> *</label>
-              <br />
-              <input
-                type="number"
-                onChange={(e) => setDocument(e.target.value)}
-                value={document}
-                className="w-full px-4 py-2 mb-2 border-b-2 bg-gray-50 focus:outline-none"
-              />
-            </div>
-            <div className="w-full  lg:w-2/5">
-              <label className="text-[18px] font-bold">
-                Correo electrónico{" "}
-              </label>
-              <label className="text-red-700"> *</label>
-              <br />
-              <input
-                type="email"
-                onChange={(e) => setEmail(e.target.value)}
-                value={email}
-                className="w-full px-4 py-2 mb-2 border-b-2 bg-gray-50 focus:outline-none"
-              />
-            </div>
+            <InputRegister
+              data={name}
+              type={"text"}
+              setData={setName}
+              name={"Nombre/s"}
+            />
+            <InputRegister
+              data={lastName}
+              type={"text"}
+              setData={setLastName}
+              name={"Apellido/s"}
+            />
+            <InputRegister
+              data={document}
+              type={"number"}
+              setData={setDocument}
+              name={"Documento de identidad "}
+            />
+            <InputRegister
+              data={email}
+              type={"email"}
+              setData={setEmail}
+              name={"Correo electrónico"}
+            />
             <div className="w-full lg:w-2/5">
               <label className="text-[18px] font-bold">Celular </label>
               <label className="text-red-700"> *</label>
@@ -156,13 +133,10 @@ export default function SignUp() {
                 className="w-full px-4 py-2 mb-2 border-b-2 bg-gray-50 focus:outline-none"
               />
               <br />
-              <button
-                type="button"
-                onClick={togglePasswordVisibility}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-              >
-                {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
-              </button>
+              <ShowPasswordButton
+                showPassword={showPassword}
+                togglePasswordVisibility={togglePasswordVisibility}
+              />
             </div>
             <section className="flex gap-2 items-center justify-center mt-[-20px] w-full">
               <input

@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import ShowPasswordButton from "../atoms/ShowPasswordButton";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -99,13 +99,10 @@ export default function Login() {
                 onChange={handlePasswordChange}
                 value={password}
               />
-              <button
-                type="button"
-                onClick={togglePasswordVisibility}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-              >
-                {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
-              </button>
+              <ShowPasswordButton
+                showPassword={showPassword}
+                togglePasswordVisibility={togglePasswordVisibility}
+              />
             </div>
 
             <button className="bg-blue-500 text-white p-2 rounded-md">
