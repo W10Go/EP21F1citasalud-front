@@ -4,14 +4,14 @@ export default function InputRegister({
   type,
   setData,
 }: {
-  data: any;
+  data: string;
   name: string;
   type: string;
-  setData: React.Dispatch<React.SetStateAction<any>>;
+  setData: React.Dispatch<React.SetStateAction<string>>;
 }) {
   return (
     <div className="w-full  lg:w-2/5">
-      <label className="text-[18px] font-bold"> {name} </label>
+      <label className="text-[18px] font-bold">{name} </label>
       <label className="text-red-700"> *</label>
       <br />
       <input

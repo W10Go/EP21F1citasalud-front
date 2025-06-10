@@ -32,6 +32,17 @@ export default function SignUp() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      if (
+        !name ||
+        !lastName ||
+        !document ||
+        !email ||
+        !cellphone ||
+        !password
+      ) {
+        alert("Por favor, completa todos los campos obligatorios.");
+        return;
+      }
       const response = await fetch("http://localhost:8080/api/usuarios", {
         method: "POST",
         headers: {

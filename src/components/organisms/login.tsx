@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import ShowPasswordButton from "../atoms/ShowPasswordButton";
 
 export default function Login() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [data, setData] = useState<User[]>([]);
@@ -27,12 +27,38 @@ export default function Login() {
   };
 
   const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(event.target.value);
+    setEmail(event.target.value);
   };
 
   const handleLogin = (e: React.FormEvent) => {
+    if (!email || !password) {
+      alert("Todos los campos son obligatorios");
+      return;
+    }
     e.preventDefault();
-    const userFound = data.find((user) => user.email === username);
+
+    const fetchLogin = async () => {
+      const res = await fetch(
+        "https://silver-telegram-699gj74rrgrx25jrp-8080.app.github.dev/api/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            email: email,
+            password: password,
+          }),
+        }
+      );
+      const newData = await res.json();
+      setData(newData);
+      console.log(newData);
+    };
+    fetchLogin();
+
+    const userFound = data.find((user) => user.email === email);
     if (!userFound) {
       alert(
         "usuario o contraseña incorrectas, por favor verifica tus datos e intenta nuevamente"
@@ -55,7 +81,9 @@ export default function Login() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch("http://localhost:8080/api/usuarios");
+      const res = await fetch(
+        "https://silver-telegram-699gj74rrgrx25jrp-8080.app.github.dev/api/usuarios"
+      );
       const newData = await res.json();
       setData(newData);
       console.log(newData);
@@ -89,7 +117,7 @@ export default function Login() {
               placeholder="Correo Electronico"
               className="w-full px-4 py-2 mb-2 border-b-2 bg-gray-50 focus:outline-none"
               onChange={handleUsernameChange}
-              value={username}
+              value={email}
             />
             <div className="relative w-full">
               <input
