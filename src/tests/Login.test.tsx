@@ -4,7 +4,7 @@ import Login from "@/components/organisms/login";
 beforeEach(() => {
   // Mock fetch
   // NOSONAR
-  const password = "1234";
+  const password = "examplePassword123"; // NOSONAR
   global.fetch = jest.fn().mockImplementation((url) => {
     if (url.toString().includes("/usuarios")) {
       return Promise.resolve({
