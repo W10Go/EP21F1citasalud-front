@@ -3,6 +3,8 @@ import Login from "@/components/organisms/login";
 
 beforeEach(() => {
   // Mock fetch
+  // NOSONAR
+  const password = "1234";
   global.fetch = jest.fn().mockImplementation((url) => {
     if (url.toString().includes("/usuarios")) {
       return Promise.resolve({
@@ -13,7 +15,7 @@ beforeEach(() => {
               nombre: "Juan",
               apellido: "Pérez",
               email: "test@example.com",
-              password: "1234",
+              password: password,
               documento: "123456",
               celular: "3000000000",
             },
