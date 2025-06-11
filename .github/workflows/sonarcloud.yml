@@ -8,22 +8,25 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  build:
-    name: Build and Analyze
+  test-and-sonar:
     runs-on: ubuntu-latest
-
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "20"
+          node-version: 18
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm ci
 
-      - name: Run Tests and Coverage
+      - name: Install ts-node (needed for jest.config.ts)
+        run: npm install --save-dev ts-node typescript
+
+      - name: Run tests with coverage
         run: npm run test -- --coverage
 
       - name: SonarCloud Scan
