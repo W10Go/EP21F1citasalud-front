@@ -3,18 +3,22 @@ export default function InputRegister({
   name,
   type,
   setData,
-}: {
+}: Readonly<{
   data: string;
   name: string;
   type: string;
   setData: React.Dispatch<React.SetStateAction<string>>;
-}) {
+}>) {
+  const id = name.toLowerCase().replace(/\s+/g, "-"); // Ej: "Nombre/s" → "nombre/s"
+
   return (
-    <div className="w-full  lg:w-2/5">
-      <label className="text-[18px] font-bold">{name} </label>
-      <label className="text-red-700"> *</label>
+    <div className="w-full lg:w-2/5">
+      <label htmlFor={id} className="text-[18px] font-bold">
+        {name} <span className="text-red-700"> *</span>
+      </label>
       <br />
       <input
+        id={id}
         type={type}
         onChange={(e) => setData(e.target.value)}
         value={data}
