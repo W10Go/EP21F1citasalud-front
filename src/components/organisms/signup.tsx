@@ -117,8 +117,9 @@ export default function SignUp() {
               name={"Correo electrónico"}
             />
             <div className="w-full lg:w-2/5">
-              <label className="text-[18px] font-bold">Celular </label>
-              <label className="text-red-700"> *</label>
+              <label htmlFor="celular" className="text-[18px] font-bold">
+                Celular <span className="text-red-700"> *</span>
+              </label>
               <br />
               <select
                 defaultValue={"option1"}
@@ -127,6 +128,7 @@ export default function SignUp() {
                 <option value={"option1"}>+57</option>
               </select>
               <input
+                id="celular"
                 type="number"
                 onChange={(e) => setCellphone(e.target.value)}
                 value={cellphone}
@@ -134,9 +136,11 @@ export default function SignUp() {
               />
             </div>
             <div className="relative w-full lg:w-2/5">
-              <label className="text-[18px] font-bold">Contraseña </label>
-              <label className="text-red-700"> *</label>
+              <label htmlFor="password" className="text-[18px] font-bold">
+                Contraseña <span className="text-red-700"> *</span>
+              </label>
               <input
+                id="password"
                 type={showPassword ? "text" : "password"}
                 onChange={(e) => setPassword(e.target.value)}
                 value={password}
