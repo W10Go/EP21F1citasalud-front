@@ -23,6 +23,7 @@ export default function SignUp() {
   };
 
   const handleRegister = async (e: React.FormEvent) => {
+    const token = localStorage.getItem("token");
     e.preventDefault();
     try {
       if (
@@ -36,24 +37,29 @@ export default function SignUp() {
         alert("Por favor, completa todos los campos obligatorios.");
         return;
       }
-      const response = await fetch("http://localhost:8080/api/usuarios", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          nombre: name,
-          apellido: lastName,
-          email: email,
-          documento: document,
-          tipoDocumento: 1,
-          telefono: cellphone,
-          fechaRegistro: new Date(),
-          ultimoAcceso: new Date(),
-          password: password,
-          estado: 1,
-        }),
-      });
+      const response = await fetch(
+        "https://ep21f1citasalud-back-pruebas.onrender.com/api/usuarios",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            nombre: name,
+            apellido: lastName,
+            email: email,
+            documento: document,
+            tipoDocumento: 1,
+            telefono: cellphone,
+            fechaRegistro: new Date(),
+            ultimoAcceso: new Date(),
+            password: password,
+            estado: 1,
+            rolId: 3, // Asignar rol de paciente
+          }),
+        }
+      );
       if (response.ok) {
         alert("Registro exitoso");
         // Puedes redirigir o limpiar el formulario aquí si lo deseas

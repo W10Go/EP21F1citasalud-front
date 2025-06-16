@@ -11,21 +11,30 @@ type UserData = {
   // Add other fields as needed
 };
 
-type Role = {
+/*type Role = {
   rolId: string;
   nombreRol: string;
   permisos: string[];
+};*/
+type Activity = {
+  actividadId: number;
+  usuario: UserData;
+  tipoActividad: string;
+  descripcion: string;
+  fechaHora: string;
+  detalleAdiccionales: string;
 };
-const token = localStorage.getItem("token");
 
 export default function Dashboard() {
   const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [role, setRole] = useState<Role | null>(null);
+  const [role, setRole] = useState<string | null>(null);
+  const [activities, setActivities] = useState<Activity[]>([]);
 
   useEffect(() => {
     // Get token and userId from localStorage
     const userId = localStorage.getItem("userId");
+    const token = localStorage.getItem("token");
 
     if (!token || !userId) {
       window.location.href = "/login"; // Redirect to login if not authenticated
@@ -46,6 +55,13 @@ export default function Dashboard() {
           const data = await res.json();
           console.log(data);
           setUser(data);
+          if (data.rolId === 1) {
+            setRole("ADMINISTRADOR");
+          } else if (data.rolId === 2) {
+            setRole("MEDICO");
+          } else if (data.rolId === 3) {
+            setRole("PACIENTE");
+          }
         } else {
           alert("No se pudo obtener la información del usuario.");
           window.location.href = "/";
@@ -62,6 +78,10 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
+    if (!user) return;
+
+    const token = localStorage.getItem("token");
+
     const fetchRoles = async () => {
       try {
         const res = await fetch(
@@ -80,8 +100,40 @@ export default function Dashboard() {
         console.error("Error fetching roles:", error);
       }
     };
+
     fetchRoles();
   }, [user]);
+
+  useEffect(() => {
+    if (!user || !role) return;
+    const token = localStorage.getItem("token");
+
+    const fetchActivities = async () => {
+      try {
+        if (!user) return;
+        if (!role) return;
+        const res = await fetch(
+          `https://ep21f1citasalud-back-pruebas.onrender.com/api/actividad-usuario/usuario/${user.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (res.ok) {
+          const activitiesRes = await res.json();
+          setActivities(activitiesRes);
+          console.log("Actividades:", activitiesRes);
+        } else {
+          console.error("Error fetching activities");
+        }
+      } catch (error) {
+        console.error("Error fetching activities:", error);
+      }
+    };
+
+    fetchActivities();
+  }, [role, user]);
 
   if (loading) {
     return (
@@ -90,11 +142,17 @@ export default function Dashboard() {
       </main>
     );
   }
+  if (loading) {
+    return (
+      <main className="flex items-center justify-center h-screen">
+        <span className="text-lg">Cargando actividades...</span>
+      </main>
+    );
+  }
 
   if (!user) {
     return null;
   }
-
   return (
     <main className="flex flex-col items-center justify-center h-screen bg-blue-50">
       <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
@@ -105,11 +163,20 @@ export default function Dashboard() {
           <strong>Email:</strong> {user.email}
         </p>
         <p className="mb-2">
-          <strong>Rol:</strong> {role?.nombreRol}
+          <strong>Rol:</strong> {role || "No asignado"}
         </p>
-        <div>
-          <strong>Actividades/Permisos:</strong>
-        </div>
+      </div>
+      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
+        <h1 className="text-2xl font-bold mb-4">Dashboard de Actividades</h1>
+        {activities.length > 0 ? (
+          <ul className="list-disc ml-6">
+            {activities.map((activity) => (
+              <li key={activity.actividadId}>{activity.fechaHora}</li>
+            ))}
+          </ul>
+        ) : (
+          <p>No hay actividades para mostrar.</p>
+        )}
       </div>
     </main>
   );

@@ -5,8 +5,6 @@ import ShowPasswordButton from "../atoms/ShowPasswordButton";
 
 import { redirectTo } from "../utils/navigation";
 
-redirectTo("/dashboard");
-
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -88,7 +86,7 @@ export default function Login() {
       localStorage.setItem("userId", verificationData.id.toString());
 
       setShow2FAPopup(false);
-      window.location.href = "/dashboard"; // Redirigir al dashboard
+      redirectTo("/dashboard"); // Redirigir al dashboard
     } else {
       alert(
         "Código de verificación incorrecto. Por favor, inténtalo de nuevo."
