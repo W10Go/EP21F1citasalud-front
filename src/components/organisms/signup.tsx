@@ -4,16 +4,9 @@ import { useState } from "react";
 import ShowPasswordButton from "../atoms/ShowPasswordButton";
 import InputRegister from "../atoms/InputRegister";
 
-/*
-type User = {
-    id: number;
-    nombre: string;
-    apellido: string;
-    email: string;
-    password: string;
-    documento: string;
-    celular: string;
-  };*/
+export function redirectTo(url: string) {
+  window.location.assign(url);
+}
 
 export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);

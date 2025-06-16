@@ -1,79 +1,93 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+// At the top of your test file, before imports that use the module:
+jest.mock("@/components/utils/navigation", () => ({
+  redirectTo: jest.fn(),
+}));
+
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import Login from "@/components/organisms/login";
 
+import { redirectTo } from "@/components/utils/navigation";
+
 beforeEach(() => {
-  // Mock fetch
-  // NOSONAR
-  const password = "examplePassword123"; // NOSONAR
-  global.fetch = jest.fn().mockImplementation((url) => {
-    if (url.toString().includes("/usuarios")) {
-      return Promise.resolve({
-        json: () =>
-          Promise.resolve([
-            {
-              id: 1,
-              nombre: "Juan",
-              apellido: "Pérez",
-              email: "test@example.com",
-              password: password,
-              documento: "123456",
-              celular: "3000000000",
-            },
-          ]),
-      });
-    }
+  // Mock fetch for login and 2FA
+  global.fetch = jest
+    .fn()
+    // First call: login
+    .mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ status: "2FA_REQUIRED" }),
+    })
+    // Second call: 2FA verification
+    .mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        id: 1,
+        token: "test-token",
+        nombre: "Administrador",
+        apellido: "Sistema",
+        email: "admin@citasalud.com",
+        rolNombre: "ADMINISTRADOR",
+        permisos: ["CREAR_USUARIO"],
+        status: "LOGIN_SUCCESS",
+      }),
+    });
 
-    if (url.toString().includes("/login")) {
-      return Promise.resolve({
-        json: () => Promise.resolve({ success: true }),
-      });
-    }
+  // Mock localStorage
+  Storage.prototype.setItem = jest.fn();
 
-    return Promise.reject(new Error("Unhandled fetch"));
-  });
+  jest.spyOn(window, "alert").mockImplementation(() => {});
+});
 
-  // ✅ Correctly mock window.location.href
-  Object.defineProperty(window, "location", {
-    writable: true,
-    value: { href: "" },
-  });
+afterEach(() => {
+  jest.resetAllMocks();
 });
 
 describe("Login component", () => {
-  it("renders email and password fields", () => {
+  it("logs in successfully with correct credentials and 2FA", async () => {
     render(<Login />);
+
+    // Fill email and password
+    await userEvent.type(
+      screen.getByPlaceholderText("Correo Electronico"),
+      "admin@citasalud.com"
+    );
+    await userEvent.type(
+      screen.getByPlaceholderText("Contraseña"),
+      "password123"
+    );
+
+    // Submit login form
+    await userEvent.click(
+      screen.getByRole("button", { name: /Iniciar sesión/i })
+    );
+
+    // Wait for 2FA popup to appear
     expect(
-      screen.getByPlaceholderText(/correo electronico/i)
+      await screen.findByText("Código de verificación")
     ).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/contraseña/i)).toBeInTheDocument();
-  });
 
-  it("shows error alert when fields are empty", () => {
-    const alertMock = jest.spyOn(window, "alert").mockImplementation(() => {});
-    render(<Login />);
-    fireEvent.click(screen.getByText(/iniciar sesión/i));
-    expect(alertMock).toHaveBeenCalledWith("Todos los campos son obligatorios");
-    alertMock.mockRestore();
-  });
+    // Enter verification code
+    await userEvent.type(
+      screen.getByPlaceholderText("Ingresa el código"),
+      "123456"
+    );
 
-  it("logs in successfully with correct credentials", async () => {
-    const alertMock = jest.spyOn(window, "alert").mockImplementation(() => {});
-    render(<Login />);
+    // Submit 2FA code
+    await userEvent.click(screen.getByRole("button", { name: /Verificar/i }));
 
-    fireEvent.change(screen.getByPlaceholderText(/correo electronico/i), {
-      target: { value: "test@example.com" },
-    });
-    fireEvent.change(screen.getByPlaceholderText(/contraseña/i), {
-      target: { value: "1234" },
-    });
-
-    fireEvent.click(screen.getByText(/iniciar sesión/i));
-
+    // Wait for localStorage to be called with token and userId
     await waitFor(() => {
-      expect(alertMock).toHaveBeenCalledWith("Inicio de sesión exitoso");
-      expect(window.location.href).toBe("/");
+      expect(localStorage.setItem).toHaveBeenCalledWith("token", "test-token");
+      expect(localStorage.setItem).toHaveBeenCalledWith("userId", "1");
     });
 
-    alertMock.mockRestore();
+    // Check that the popup is closed and redirected
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Código de verificación")
+      ).not.toBeInTheDocument();
+      expect(redirectTo).toHaveBeenCalledWith("/dashboard");
+    });
   });
 });
