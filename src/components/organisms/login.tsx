@@ -9,19 +9,12 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  // const [data, setData] = useState<User[]>([]);
-
   const [show2FAPopup, setShow2FAPopup] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
-  /* type User = {
-    id: number;
-    token: string;
-    email: string;
-  };*/
 
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value);
@@ -56,7 +49,6 @@ export default function Login() {
       if (newData.status === "2FA_REQUIRED") {
         setShow2FAPopup(true);
       }
-      // setData(newData);
 
       if (!res.ok) {
         alert("Error al iniciar sesión, por favor verifica tus datos");

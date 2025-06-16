@@ -11,18 +11,20 @@ const Footer = ({ setPopupTerms, setPopupOpenPrivacy }: FooterProps) => (
       <div className="">
         <Image src="/citasaludlogo.png" alt="logo" width={170} height={100} />
       </div>
-      <a
+      <button
+        type="button"
         onClick={() => setPopupTerms(true)}
-        className="h-20 flex justify-center text-bank3 items-center text-sm  font-normal hover:font-bold hover:text-bank2 cursor-pointer"
+        className="h-20 flex justify-center text-bank3 items-center text-sm font-normal hover:font-bold hover:text-bank2 cursor-pointer bg-transparent border-none"
       >
         Términos y condiciones
-      </a>
-      <a
+      </button>
+      <button
+        type="button"
         onClick={() => setPopupOpenPrivacy(true)}
-        className="h-20 flex justify-center text-bank3 items-center text-sm font-normal hover:font-bold hover:text-bank2 cursor-pointer"
+        className="h-20 flex justify-center text-bank3 items-center text-sm font-normal hover:font-bold hover:text-bank2 cursor-pointer bg-transparent border-none"
       >
         Política de privacidad
-      </a>
+      </button>
     </div>
   </footer>
 );

@@ -8,14 +8,8 @@ type UserData = {
   email: string;
   rolId: string;
   permisos: string[];
-  // Add other fields as needed
 };
 
-/*type Role = {
-  rolId: string;
-  nombreRol: string;
-  permisos: string[];
-};*/
 type Activity = {
   actividadId: number;
   usuario: UserData;
