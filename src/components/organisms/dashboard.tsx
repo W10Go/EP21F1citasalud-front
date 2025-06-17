@@ -88,7 +88,7 @@ export default function Dashboard() {
         );
         if (res.ok) {
           const roleData = await res.json();
-          setRole(roleData);
+          setRole(roleData.nombreRol); // Solo el nombre del rol
         }
       } catch (error) {
         console.error("Error fetching roles:", error);
