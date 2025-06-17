@@ -157,7 +157,7 @@ export default function Dashboard() {
           <strong>Email:</strong> {user.email}
         </p>
         <p className="mb-2">
-          <strong>Rol:</strong> {role || "No asignado"}
+          <strong>Rol:</strong> {role ?? "No asignado"}
         </p>
       </div>
       <div className="bg-white p-8 rounded shadow-md w-full max-w-md">

@@ -3,10 +3,10 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 export default function ShowPasswordButton({
   showPassword,
   togglePasswordVisibility,
-}: {
+}: Readonly<{
   showPassword: boolean;
   togglePasswordVisibility: () => void;
-}) {
+}>) {
   return (
     <button
       type="button"

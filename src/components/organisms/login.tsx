@@ -52,7 +52,6 @@ export default function Login() {
 
       if (!res.ok) {
         alert("Error al iniciar sesión, por favor verifica tus datos");
-        return;
       }
     };
     fetchLogin();
