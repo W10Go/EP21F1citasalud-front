@@ -62,7 +62,7 @@ export default function SignUp() {
       );
       if (response.ok) {
         alert("Registro exitoso");
-        // Puedes redirigir o limpiar el formulario aquí si lo deseas
+        redirectTo("/login");
       } else {
         alert("Error al registrar usuario");
       }
