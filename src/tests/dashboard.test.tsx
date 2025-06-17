@@ -41,7 +41,7 @@ describe("Dashboard", () => {
       // Role fetch
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => "ADMINISTRADOR",
+        json: async () => ({ nombreRol: "ADMINISTRADOR" }),
       })
       // Activities fetch
       .mockResolvedValueOnce({

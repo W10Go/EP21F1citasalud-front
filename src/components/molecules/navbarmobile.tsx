@@ -26,7 +26,7 @@ const Index = () => {
             Home
           </a>
           <div className="h-9 flex justify-center text-bank3 items-center hover:text-bank2 cursor-pointer">
-            <a href="#" className="text-sm font-normal hover:font-bold">
+            <a href="/signup" className="text-sm font-normal hover:font-bold">
               Registrarse
             </a>
           </div>
