@@ -107,7 +107,7 @@ export default function Dashboard() {
         if (!user) return;
         if (!role) return;
         const res = await fetch(
-          `https://ep21f1citasalud-back-pruebas.onrender.com/api/actividad-usuario/usuario/${user.id}`,
+          `https://ep21f1citasalud-back-pruebas.onrender.com/api/actividad-usuario/usuario/${user?.id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
