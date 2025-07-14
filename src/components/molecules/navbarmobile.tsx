@@ -22,14 +22,12 @@ const Index = () => {
       </div>
       {isOpen && (
         <div className="flex flex-col justify-center items-center bg-[#90AFB3] absolute shadow-md w-5/6 inset-x-10 top-20 p-1 rounded-md ">
-          <a href="#" className="text-sm font-normal hover:font-bold">
+          <Link href="#" className="text-sm font-normal hover:font-bold">
             Home
-          </a>
-          <div className="h-9 flex justify-center text-bank3 items-center hover:text-bank2 cursor-pointer">
-            <a href="/signup" className="text-sm font-normal hover:font-bold">
-              Registrarse
-            </a>
-          </div>
+          </Link>
+          <Link href="/signup" passHref>
+            <p className="text-sm font-normal hover:font-bold">Registrarse</p>
+          </Link>
           <Link href="/login" passHref>
             <button className="w-40 h-9 bg-blue-500 text-white font-bold rounded-full text-sm hover:scale-105 transition-all duration-300 cursor-pointer">
               Iniciar Sesión

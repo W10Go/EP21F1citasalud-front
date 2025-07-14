@@ -3,14 +3,16 @@ import Image from "next/image";
 import { useState } from "react";
 import ShowPasswordButton from "../atoms/ShowPasswordButton";
 import InputRegister from "../atoms/InputRegister";
-
+import { createSupabaseBrowserClient } from "@/components/utils/supabase-browser";
+import { redirectTo } from "../utils/navigation";
+/*
 export function redirectTo(url: string) {
   window.location.assign(url);
-}
+}*/
 
 export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
-  const [name, setName] = useState("");
+  const [firstName, setName] = useState("");
   const [lastName, setLastName] = useState("");
   const [document, setDocument] = useState("");
   const [email, setEmail] = useState("");
@@ -21,13 +23,14 @@ export default function SignUp() {
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
+  const supabase = createSupabaseBrowserClient();
 
-  const handleRegister = async (e: React.FormEvent) => {
-    const token = localStorage.getItem("token");
-    e.preventDefault();
+  // 1️⃣  Put your call inside an async function (or the top level of an ES module)
+  async function handleRegister() {
     try {
+      // 2️⃣  Call your wrapper with await and the right payload
       if (
-        !name ||
+        !firstName ||
         !lastName ||
         !document ||
         !email ||
@@ -37,6 +40,48 @@ export default function SignUp() {
         alert("Por favor, completa todos los campos obligatorios.");
         return;
       }
+      await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          // (optional) where Supabase should redirect after the magic‑link is clicked
+          emailRedirectTo: "http://localhost:3000/auth/callback",
+          // (optional) any extra metadata you want on `user.user_metadata`
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+            document_type: 1,
+            document_number: Number(document),
+            cellphone: cellphone,
+            // (optional) reCAPTCHA token if you enabled captcha protection
+            // captchaToken: "token‑from‑recaptcha‑v2‑invisible",
+          },
+        },
+      });
+      redirectTo("/dashboard");
+    } catch (err) {
+      alert("Unexpected error while signing up:" + err);
+    }
+  }
+
+  /*
+  const handleRegister = async (e: React.FormEvent) => {
+    const token = localStorage.getItem("token");
+    e.preventDefault();
+    try {
+      if (
+        !firstName ||
+        !lastName ||
+        !document ||
+        !email ||
+        !cellphone ||
+        !password
+      ) {
+        alert("Por favor, completa todos los campos obligatorios.");
+        return;
+      }
+      
+
       const response = await fetch(
         "https://ep21f1citasalud-back-pruebas.onrender.com/api/usuarios",
         {
@@ -46,7 +91,7 @@ export default function SignUp() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            nombre: name,
+            nombre: firstName,
             apellido: lastName,
             email: email,
             documento: document,
@@ -70,7 +115,7 @@ export default function SignUp() {
       alert(error + "Error de conexión");
     }
   };
-
+*/
   return (
     <main>
       <div className="relative flex items-center justify-center h-screen bg-white">
@@ -92,7 +137,7 @@ export default function SignUp() {
             onSubmit={handleRegister}
           >
             <InputRegister
-              data={name}
+              data={firstName}
               type={"text"}
               setData={setName}
               name={"Nombre/s"}
@@ -156,7 +201,6 @@ export default function SignUp() {
                 type="checkbox"
                 onChange={() => {
                   setTermsAccepted((prev) => !prev);
-                  console.log(termsAccepted);
                 }}
               ></input>
               <p>Aceptar</p>

@@ -1,16 +1,24 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ShowPasswordButton from "../atoms/ShowPasswordButton";
-
+import { createSupabaseBrowserClient } from "../utils/supabase-browser";
 import { redirectTo } from "../utils/navigation";
+import { User } from "@supabase/supabase-js";
 
-export default function Login() {
+export default function Login({ session }: { readonly session: User | null }) {
+  useEffect(() => {
+    if (session) {
+      redirectTo("/dashboard");
+    }
+  }, [session]);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [show2FAPopup, setShow2FAPopup] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
+  const [showError, setShowError] = useState<string>("");
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -24,7 +32,43 @@ export default function Login() {
     setEmail(event.target.value);
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const supabase = createSupabaseBrowserClient();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!email || !password) {
+      setShowError("Todos los campos son obligatorios");
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
+
+      await supabase
+        .from("user_activity")
+        .insert({ log_type: 2, user_id: data.user?.id });
+
+      if (error) {
+        setShowError("Error al iniciar sesión, por favor verifica tus datos");
+      } else {
+        window.location.href = window.location.href;
+      }
+
+      if (data.session?.user?.email_confirmed_at === null) {
+        setShow2FAPopup(true);
+        return;
+      }
+    } catch (err) {
+      console.error("Unexpected error while logging in:", err);
+      setShowError("Error innesperado al realizar el inicio de sesión:");
+    }
+  };
+
+  /*const handleLogin = (e: React.FormEvent) => {
     if (!email || !password) {
       alert("Todos los campos son obligatorios");
       return;
@@ -55,9 +99,16 @@ export default function Login() {
       }
     };
     fetchLogin();
-  };
+  };*/
 
   const verification2FA = async () => {
+    /*const supabase = createSupabaseBrowserClient();
+    const { data, error } = await supabase.auth.verifyOtp({
+      email: "user@example.com",
+      token: verificationCode, // <-- whatever they just typed
+      type: "email", // (or 'signup' in older SDKs)
+    });*/
+
     const res = await fetch(
       "https://ep21f1citasalud-back-pruebas.onrender.com/api/auth/verify-2fa",
       {
@@ -127,7 +178,9 @@ export default function Login() {
                 togglePasswordVisibility={togglePasswordVisibility}
               />
             </div>
-
+            {showError && (
+              <p className="text-red-500 text-sm mb-2">{showError}</p>
+            )}
             <button className="bg-blue-500 text-white p-2 rounded-md">
               Iniciar sesión
             </button>

@@ -1,6 +1,6 @@
 import Image from "next/image";
-import Link from "next/link";
 import { AiFillHome } from "react-icons/ai";
+import { ServerSessionButtons } from "./server-session-buttons";
 
 const Index = () => {
   return (
@@ -15,16 +15,8 @@ const Index = () => {
         >
           <AiFillHome className="text-2xl" />
         </a>
-        <div className="h-9 flex justify-center text-bank3 items-center hover:text-bank2 cursor-pointer">
-          <a href="#" className="text-sm font-normal hover:font-bold">
-            Registrarse
-          </a>
-        </div>
-        <Link href="/login" passHref>
-          <button className="w-40 h-9 bg-blue-500 text-white font-bold rounded-full text-sm hover:scale-105 transition-all duration-300 cursor-pointer">
-            Iniciar Sesión
-          </button>
-        </Link>
+
+        <ServerSessionButtons />
       </div>
     </nav>
   );
