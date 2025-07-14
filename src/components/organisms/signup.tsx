@@ -19,6 +19,7 @@ export default function SignUp() {
   const [cellphone, setCellphone] = useState("");
   const [password, setPassword] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [errorToShow, setErrorToShow] = useState("");
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -37,10 +38,10 @@ export default function SignUp() {
         !cellphone ||
         !password
       ) {
-        alert("Por favor, completa todos los campos obligatorios.");
+        setErrorToShow("Por favor, completa todos los campos obligatorios.");
         return;
       }
-      await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: email,
         password: password,
         options: {
@@ -58,9 +59,15 @@ export default function SignUp() {
           },
         },
       });
-      redirectTo("/dashboard");
+      if (error) {
+        console.log(data);
+
+        setErrorToShow("Usuario ya se encuentra registrado");
+      } else {
+        redirectTo("/login");
+      }
     } catch (err) {
-      alert("Unexpected error while signing up:" + err);
+      setErrorToShow("Unexpected error while signing up:" + err);
     }
   }
 
@@ -134,7 +141,10 @@ export default function SignUp() {
           </section>
           <form
             className="flex flex-col md:flex-row md:flex-wrap items-center justify-between gap-10 w-full"
-            onSubmit={handleRegister}
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleRegister();
+            }}
           >
             <InputRegister
               data={firstName}
@@ -208,6 +218,11 @@ export default function SignUp() {
                 TyC
               </a>
             </section>
+            {errorToShow && (
+              <p className="text-red-500 text-sm mb-2 w-[100%] text-center">
+                {errorToShow}
+              </p>
+            )}
             <section className="flex items-center justify-center mt-[-23px] w-full">
               <button
                 disabled={!termsAccepted}
