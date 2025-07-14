@@ -64,7 +64,7 @@ export default function SignUp() {
 
         setErrorToShow("Usuario ya se encuentra registrado");
       } else {
-        redirectTo("/login");
+        redirectTo("/dashboard");
       }
     } catch (err) {
       setErrorToShow("Unexpected error while signing up:" + err);
